@@ -9,6 +9,8 @@ module.exports = {
   
   
   /**
+   * create new post
+   * post /post
    * `PostController.create()`
    */
   create: async function (req, res) {
@@ -46,6 +48,8 @@ module.exports = {
   },
 
   /**
+   * find post by id 
+   * /post/:id
    * `PostController.findOne()`
    *  /posts/{id}
    */
@@ -60,6 +64,8 @@ module.exports = {
   },
 
   /**
+   * finding all post 
+   * /posts/
    * `PostController.findAll()`
    */
   findAll: async function (req, res) {
@@ -74,18 +80,56 @@ module.exports = {
   },
 
   /**
-   * `PostController.update()`
+   * deleteing post by id
+   * /posts/:id
+   * `PostController.delete()`
    */
   delete: async function (req, res) {
-    return res.json({
-      todo: 'update() is not implemented yet!'
-    });
+    let id = req.params.id
+    if(!id)
+      res.badRequest({err:'invaid post id'})
+      try {
+        let post = await Post.destroy({id}).fetch()
+        if(!post || post.length === 0)
+          res.ok(`No Record with ID: ${id} in our databases`)  
+        res.ok(`ID: ${post.id} Post: ${post.title} has been deleted`)
+      } catch (err) {
+        res.serverError(err)
+      }
   },
 
   /**
-   * `PostController.delete()`
+   * updating post by id
+   * `PostController.update()`
    */
-  update: async function (req, res) {
+  update : async function (req, res) {
+    let id = req.params.id,
+      _user = req.param('user_id')
+      title = req.param('title'),
+      content = req.param('content')
+    
+    let post = {}
+    if(_user)
+      post._user = _user
+    if(title)
+      post.title = title
+    if(content)
+      post.content = content
+    
+    try {
+      let up_post = await Post.update({id}).set(post).fetch()
+      res.ok(up_post)
+    } catch (err) {
+      throw new Error('Error while updating')
+    }
+
+  },
+
+
+  /**
+   * `PostController.create using async serials`
+   */
+  createasync: async function (req, res) {
     // updating the Post Comming!
     let category = req.param('category'),
     _user = req.param('user_id')

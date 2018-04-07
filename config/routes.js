@@ -13,7 +13,7 @@ module.exports.routes = {
   'POST /posts':'PostController.create',
   'GET /posts':'PostController.findAll',
   'GET /posts/:id':'PostController.findOne',
-  'POST /posts':'PostController.update',
+  'PUT /posts/:id':'PostController.update',
   'DELETE /posts/:id':'PostController.delete',
 
 
