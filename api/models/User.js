@@ -1,5 +1,5 @@
 /**
- * Post.js
+ * User.js
  *
  * @description :: A model definition.  Represents a database table/collection/etc.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
@@ -13,9 +13,13 @@ module.exports = {
     //  ╠═╝╠╦╝║║║║║ ║ ║╚╗╔╝║╣ ╚═╗
     //  ╩  ╩╚═╩╩ ╩╩ ╩ ╩ ╚╝ ╚═╝╚═╝
 
-    title: { type: 'string' },
+    first_name: { type: 'string' },
 
-    content: { type: 'string' },
+    last_name: { type: 'string' },
+
+    username: { type: 'string' },
+
+    password: { type: 'string' },
 
     //  ╔═╗╔╦╗╔╗ ╔═╗╔╦╗╔═╗
     //  ║╣ ║║║╠╩╗║╣  ║║╚═╗
@@ -25,18 +29,15 @@ module.exports = {
     //  ╔═╗╔═╗╔═╗╔═╗╔═╗╦╔═╗╔╦╗╦╔═╗╔╗╔╔═╗
     //  ╠═╣╚═╗╚═╗║ ║║  ║╠═╣ ║ ║║ ║║║║╚═╗
     //  ╩ ╩╚═╝╚═╝╚═╝╚═╝╩╩ ╩ ╩ ╩╚═╝╝╚╝╚═╝
-
-    _user : {
-      model: 'user',
-      columnName: 'user_id',
-      required: true
-    },
-    _category: {
-      model:  'category',
-      columnName: 'category_id',
-      required: true  
+    posts : {
+      collection: 'post',
+      via:  '_user'
     }
+
+
+
   },
+
 
 };
 

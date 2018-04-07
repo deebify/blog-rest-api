@@ -9,6 +9,13 @@
  */
 
 module.exports.routes = {
+  //defining the custom routes for contoller action
+  'POST /posts':'PostController.create',
+  'GET /posts':'PostController.findAll',
+  'GET /posts/:id':'PostController.findOne',
+  'PUT /posts/:id':'PostController.findOne',
+  'DELETE /posts/:id':'PostController.delete',
+
 
 
   /***************************************************************************
