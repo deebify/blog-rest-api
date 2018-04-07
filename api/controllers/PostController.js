@@ -15,23 +15,31 @@ module.exports = {
 
     // Get All Post Data 
     let category = req.param('category'),
-      user_id = req.param('user_id')
+      _user = req.param('user_id')
       title = req.param('title'),
       content = req.param('content')
 
       if( !category || !content || !user_id || !title)
         res.badRequest({err: 'invalid post data'})   
-             
+
+      var cate_item = null
       try{
-        category = await Category.create({name:category}).fetch()
-        let post = await Post.create({
+        // find category if not exist create one 
+        cate_item = await Category.findOne({
+          name : category
+        })
+        
+        if(!cate_item)
+          cate_item = await Category.create({name:category}).fetch()
+        
+          let post = await Post.create({
           title,
           content,
-          _user : user_id,
-          _category : category.id
+          _user,
+          _category : cate_item.id
         }).fetch()
 
-        res.ok({category,post})
+        res.ok({cate_item,post})
     } catch(err){
       res.serverError(err)
     }
@@ -39,27 +47,36 @@ module.exports = {
 
   /**
    * `PostController.findOne()`
+   *  /posts/{id}
    */
   findOne: async function (req, res) {
-    return res.json({
-      todo: 'findOne() is not implemented yet!'
-    });
+    let id = req.params.id
+    if(!id)
+      res.badRequest({err:'invalid post id'})
+
+    let post = await Post.findOne({id}).populate('_category')
+
+    res.ok({post})
   },
 
   /**
    * `PostController.findAll()`
    */
   findAll: async function (req, res) {
-    let cateories = await Category.findAll()
-    return res.json({
-      list: cateories
-    });
+    // /posts/
+
+    let posts = await Post.find().populate('_category')
+    
+    if(!posts || posts.length === 0)
+      throw new Error('No post retrieved!')
+
+    res.ok({posts})
   },
 
   /**
    * `PostController.update()`
    */
-  update: async function (req, res) {
+  delete: async function (req, res) {
     return res.json({
       todo: 'update() is not implemented yet!'
     });
@@ -68,10 +85,47 @@ module.exports = {
   /**
    * `PostController.delete()`
    */
-  delete: async function (req, res) {
-    return res.json({
-      todo: 'delete() is not implemented yet!'
-    });
+  update: async function (req, res) {
+    // updating the Post Comming!
+    let category = req.param('category'),
+    _user = req.param('user_id')
+    title = req.param('title'),
+    content = req.param('content')
+
+    if( !category || !content || !_user || !title)
+      res.badRequest({err: 'invalid post data'})
+    
+    var cate_item
+    async.series([
+      async cb => {
+        try{
+          cate_item = await Category.findOne({name:category})
+          if(!cate_item)
+            cate_item = await Category.create({name:category}).fetch();
+          cb(null,cate_item)
+        }catch(err){
+          cb(err)
+        }
+      },
+      async cb => {
+        try {
+          post = await Post.create({
+            title,
+            content,
+            _user,
+            _category:cate_item.id
+          }).fetch()
+          cb(null,post)
+        } catch (err) {
+          cb(err)
+        }
+      }
+    ],(err,results)=>{
+      if(err)
+        res.serverError(err)
+
+      res.ok(results)
+    })
   }
 
 };
